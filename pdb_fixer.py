@@ -404,9 +404,18 @@ def fix_pdb(
     log_missing_residues(fixer)
 
     if add_missing_residues:
-        log(
-            "Missing residue addition enabled"
-        )
+        log("Missing residue addition enabled (internal only)")
+
+        chains = list(fixer.topology.chains())
+
+        fixer.missingResidues = {
+            (chain_index, residue_index): residues
+            for (chain_index, residue_index), residues
+            in fixer.missingResidues.items()
+            if 0 < residue_index < len(
+                list(chains[chain_index].residues())
+            )
+        }
     else:
         log(
             "Missing residue addition disabled; "
